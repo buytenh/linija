@@ -54,7 +54,7 @@ Determining how the tiles in the puzzle should be interconnected [is done](src/e
 * Triangle/diamond/square tiles can only be adjacent to triangle/diamond/square edges.
 * Connect-2/3/4 pieces can be adjacent to any edge types, but the number of adjacent edges of each type must be even.
 
-Once a candidate edge partitioning has been found, the sets of edges are fed to the [trail tracer](src/trail.rs), which is an implementation of Hierholzer's trail tracing algorithm.  Note that a partitioning can still be rejected in this stage, as the edge partitioner does not necessarily produce connected sets of edges.  This is an example where the partitioner produces an invalid candidate partitioning, for which the set of triangle edges consists of more than one connected component:
+This final step rejects candidate solutions such as this one:
 
 ```
 S d D      S d-D      S d D
@@ -64,6 +64,16 @@ D 3-t      D-3 t      D 3 t
 s 2 T      s 2 T      s-2 T
   |                      \
 T-t S      T t S      T t S
+```
+
+Once a candidate edge partitioning has been found, the sets of edges are fed to the [trail tracer](src/trail.rs), which is an implementation of Hierholzer's trail tracing algorithm.  Note that a partitioning can still be rejected in this stage, as the edge partitioner does not necessarily produce connected sets of edges.  This is an example where the partitioner produces an invalid candidate partitioning, for which the set of triangle edges consists of more than one connected component:
+
+```
+d D T S       d-D T S       d D T S
+   /           \                  |
+D 2 t-2       D 2 t 2       D 2 t 2
+  | |/         \ \                |
+T-2 2 S       T 2-2 S       T 2 2 S
 ```
 
 If any set of edges turns out not to be connected, the trail tracer will fail to produce a trail and will reject the candidate edge partitioning.
